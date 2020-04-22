@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="Clog:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Clog_jar</output-path>
-    <root id="archive" name="Clog.jar">
-      <element id="module-output" name="Clog" />
-    </root>
-  </artifact>
-</component>
