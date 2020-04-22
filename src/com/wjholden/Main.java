@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 public class Main {
 
     private final static List<String> db = new ArrayList<>();
+    private final static List<Cluster> clusters = new ArrayList<>();
 
     private final static Page database = new Page("Database", "Database",
             new Page[0],
@@ -25,7 +26,7 @@ public class Main {
             Collections::emptyList);
     private final static Page mainPage = new Page("Main Menu", "Main",
             new Page[] { doubles, integers, database, empty },
-            () -> List.of("Hello", "World"));
+            () -> List.of(Integer.toString(db.size())));
 
     public static void main(String[] args) {
         new Thread(new Syslog(514, db)).start();

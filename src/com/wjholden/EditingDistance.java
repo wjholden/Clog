@@ -3,7 +3,7 @@ package com.wjholden;
 import java.util.stream.IntStream;
 
 public class EditingDistance {
-    public static int editingDistance(String s1, String s2) {
+    public static float editingDistance(String s1, String s2) {
         final int d[][] = new int[s1.length() + 1][s2.length() + 1];
         IntStream.range(0, s1.length() + 1).forEach(i -> d[i][0] = i);
         IntStream.range(0, s2.length() + 1).forEach(j -> d[0][j] = j);

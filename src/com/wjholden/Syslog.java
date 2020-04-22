@@ -7,11 +7,11 @@ import java.util.Collection;
 
 public class Syslog implements Runnable {
     private final int port;
-    private final Collection<String> db;
+    private final Collection<String> queue;
 
-    public Syslog(int port, Collection<String> db) {
+    public Syslog(int port, Collection<String> queue) {
         this.port = port;
-        this.db = db;
+        this.queue = queue;
     }
 
     @Override
@@ -22,7 +22,10 @@ public class Syslog implements Runnable {
             while (true) {
                 socket.receive(packet);
                 String s = new String(buf, 5, packet.getLength() - 5);
-                db.add(s);
+                synchronized (queue) {
+                    queue.add(s);
+                }
+                queue.notify();
             }
         } catch (IOException e) {
             e.printStackTrace();
