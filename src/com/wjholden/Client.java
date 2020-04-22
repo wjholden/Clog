@@ -29,8 +29,15 @@ public class Client implements Runnable {
                 final var currentPage = deque.getLast();
                 out.print("\u001B[2J");
                 out.println(currentPage);
-                final char c = (char) in.read();
-                var page = currentPage.command(c);
+                Page page;
+
+                if (currentPage.characterMode) {
+                    final char c = (char) in.read();
+                    page = currentPage.command(c);
+                } else {
+                    final String s = in.readLine();
+                    page = currentPage.command(s);
+                }
 
                 if (page == null) {
                     deque.removeLast();
@@ -39,9 +46,7 @@ public class Client implements Runnable {
                 }
             }
         } catch (IOException ex) {
-            System.err.println(ex);
-        } catch (InterruptedException ex) {
-            // do nothing, the user is disconnecting.
+            ex.printStackTrace();
         }
     }
 }

@@ -1,35 +1,29 @@
 package com.wjholden;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
 
 public class Main {
+    private final List<String> db = new ArrayList<>();
+    private final BlockingQueue<String> queue = new LinkedBlockingDeque<>();
+    private final Classifier classifier = new Classifier(.20, queue, db);
 
-    private final static List<String> db = new ArrayList<>();
-    private final static List<Cluster> clusters = new ArrayList<>();
+    public Main() {
+        final Page database = new Page("Database", new Page[0], () -> db);
+        final Page clusters = new Page("Clusters", new Page[0], classifier::menu);
+        final Page mainPage = new Page("Main Menu", new Page[] { database, clusters },
+                () -> List.of("Logs: " + db.size(), "Clusters: " + classifier.clusterCount()),
+                false, false, true);
 
-    private final static Page database = new Page("Database", "Database",
-            new Page[0],
-            () -> db);
-    private final static Page doubles = new Page("Doubles (Random 1000)", "Doubles",
-            new Page[] { database },
-            () -> DoubleStream.generate(Math::random).limit(1000).boxed().map(Object::toString).collect(Collectors.toList()));
-    private final static Page integers = new Page("Integers (Random 100)", "Integers",
-            new Page[] { doubles, database },
-            () -> IntStream.generate(() -> (int) (1000 * Math.random())).limit(100).boxed().map(Object::toString).collect(Collectors.toList()));
-    private final static Page empty = new Page("Empty", "Empty",
-            new Page[0],
-            Collections::emptyList);
-    private final static Page mainPage = new Page("Main Menu", "Main",
-            new Page[] { doubles, integers, database, empty },
-            () -> List.of(Integer.toString(db.size())));
-
-    public static void main(String[] args) {
-        new Thread(new Syslog(514, db)).start();
+        new Thread(classifier).start();
+        new Thread(new Syslog(514, queue)).start();
         new Menu(23, mainPage);
     }
+
+    public static void main(String[] args) {
+        new Main();
+    }
+
 }

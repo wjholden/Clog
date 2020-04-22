@@ -16,16 +16,13 @@ public class Syslog implements Runnable {
 
     @Override
     public void run() {
-        try (DatagramSocket socket = new DatagramSocket(514)) {
+        try (DatagramSocket socket = new DatagramSocket(port)) {
             byte[] buf = new byte[1500];
             DatagramPacket packet = new DatagramPacket(buf, buf.length);
             while (true) {
                 socket.receive(packet);
                 String s = new String(buf, 5, packet.getLength() - 5);
-                synchronized (queue) {
-                    queue.add(s);
-                }
-                queue.notify();
+                queue.add(s);
             }
         } catch (IOException e) {
             e.printStackTrace();
